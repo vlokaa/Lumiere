@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumière</title>
+  <meta name="description" content="Lumière landing page">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      var theme;
+      try { theme = localStorage.getItem("lumiere-theme"); } catch (e) {}
+      if (!theme) {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="page.css">
+  
+  <link rel="icon" href="logos/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32.png">
+  <link rel="apple-touch-icon" href="logos/apple-touch-icon.png">
+
+</head>
+
+
+
+<body>
+
+  <!-- HEADER / NAVIGATION -->
+  <header id="top">
+    <a href="#top" class="logo">Lumière</a>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button type="button" id="theme-toggle" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="theme-icon" aria-hidden="true">☾</span>
+      </button>
+      <a href="#contact" class="btn">Get started</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section id="hero">
+      <h1>Welcome to Lumière</h1>
+      <p>Where timeless elegance meets radiant beauty, LUMIÈRE brings you a world of luxury, sophistication, and unforgettable moments that let your inner light shine.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn">Get started</a>
+        <a href="#about" class="btn-secondary">Learn more</a>
+      </div>
+      <img src="pics/lumiere pic 1.jpg" alt="Lumière product showcase">
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <h2>Features</h2>
+      <p>What makes Lumière different.</p>
+      <div class="feature-list">
+        <article>
+          <h3>Timeless Elegance</h3>
+          <p>Every product is selected to reflect sophistication, beauty, and timeless style. LUMIÈRE makes luxury feel effortless and memorable.</p>
+        </article>
+        <article>
+          <h3>Curated Exclusivity</h3>
+          <p>Discover carefully curated pieces chosen for their distinctive character, refined details, and premium appeal.</p>
+        </article>
+        <article>
+          <h3>Personal Luxury</h3>
+          <p>Experience a more personal approach to luxury, where every detail feels intentional and every customer feels valued.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="about-text">
+        <h2>About Lumière</h2>
+        <p>LUMIÈRE is a great concept for a premium, elegant online boutique. The name comes from the French word for “light,” giving the brand a sophisticated, timeless feeling.</p>
+        <a href="#contact" class="btn">Talk to us</a>
+      </div>
+      <img src="pics/lumiere pic 2.jpg" alt="About Lumière">
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+      <h2>Gallery</h2>
+      <div class="gallery-grid">
+        <figure>
+          <img src="pics/lumiere pic 3.jpg" alt="Gallery image 1">
+          <figcaption>Velouré</figcaption>
+        </figure>
+        <figure>
+          <img src="pics/lumiere pic 4.jpg" alt="Gallery image 2">
+          <figcaption>Élaria</figcaption>
+        </figure>
+        <figure>
+          <img src="pics/lumiere pic 5.jpg" alt="Gallery image 3">
+          <figcaption>Maison Élan</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials">
+      <h2>What people say</h2>
+      <div class="testimonial-list">
+        <blockquote>
+          <p>Scent is everything, and Lumière delivers on every level.</p>
+          <footer>Hedrex Sumugat, Customer</footer>
+        </blockquote>
+        <blockquote>
+          <p>Perfumes are an art form, and Lumière captures that essence perfectly.</p>
+          <footer>Jack Daniel Lumapas, Customer</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION / CONTACT -->
+    <section id="contact">
+      <h2>Ready to try Lumière?</h2>
+      <p>Leave your details and we'll get back to you.</p>
+      <form action="#" method="post">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="4"></textarea>
+
+        <button type="submit">Send message</button>
+        <p id="form-status" role="status"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#top" class="logo">Lumière</a>
+    <nav aria-label="Footer navigation">
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <p>&copy; 2026 Lumière. All rights reserved.</p>
+  </footer>
+
+  <script src="page.js" defer></script>
+</body>
+</html>
