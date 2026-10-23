@@ -548,22 +548,31 @@ blockquote, form, input, textarea, body > footer {
   will-change: transform;
 }
 
-/* ===== Scroll reveal: elements rise / slide / zoom in as they enter the screen ===== */
+/* ===== Scroll reveal: show when scrolling down, fade away again when scrolling up ===== */
+.reveal.reveal {
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    scale 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s ease,
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease;
+}
+
+/* hidden state */
 .reveal:not(.in-view) { opacity: 0; }
 .reveal-rise:not(.in-view)  { translate: 0 48px; }
 .reveal-left:not(.in-view)  { translate: -70px 0; }
 .reveal-right:not(.in-view) { translate: 70px 0; }
 .reveal-zoom:not(.in-view)  { scale: 0.92; translate: 0 32px; }
 
-.reveal-rise.in-view  { animation: lumiere-rise  1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
-.reveal-left.in-view  { animation: lumiere-left  1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
-.reveal-right.in-view { animation: lumiere-right 1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
-.reveal-zoom.in-view  { animation: lumiere-zoom  1.1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
-
-@keyframes lumiere-rise  { from { opacity: 0; translate: 0 48px; }  to { opacity: 1; translate: 0 0; } }
-@keyframes lumiere-left  { from { opacity: 0; translate: -70px 0; } to { opacity: 1; translate: 0 0; } }
-@keyframes lumiere-right { from { opacity: 0; translate: 70px 0; }  to { opacity: 1; translate: 0 0; } }
-@keyframes lumiere-zoom  { from { opacity: 0; scale: 0.92; translate: 0 32px; } to { opacity: 1; scale: 1; translate: 0 0; } }
+/* visible state (staggered when it appears, instant start when it fades away) */
+.reveal.in-view { opacity: 1; translate: 0 0; scale: 1; }
+.reveal.reveal.in-view {
+  transition-delay: var(--d, 0s), var(--d, 0s), var(--d, 0s), 0s, 0s, 0s, 0s, 0s;
+}
 `;
 
   // ---------- Tumatakbo agad (para walang flash) ----------
@@ -632,12 +641,10 @@ blockquote, form, input, textarea, body > footer {
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in-view");
-            observer.unobserve(entry.target);
-          }
+          // on screen -> show; off screen -> hide, so it plays again on the way back
+          entry.target.classList.toggle("in-view", entry.isIntersecting);
         });
-      }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
+      }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
 
       groups.forEach(([selector, type]) => {
         const counts = new Map();   // stagger siblings one after another
