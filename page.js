@@ -547,6 +547,23 @@ blockquote, form, input, textarea, body > footer {
   pointer-events: none;
   will-change: transform;
 }
+
+/* ===== Scroll reveal: elements rise / slide / zoom in as they enter the screen ===== */
+.reveal:not(.in-view) { opacity: 0; }
+.reveal-rise:not(.in-view)  { translate: 0 48px; }
+.reveal-left:not(.in-view)  { translate: -70px 0; }
+.reveal-right:not(.in-view) { translate: 70px 0; }
+.reveal-zoom:not(.in-view)  { scale: 0.92; translate: 0 32px; }
+
+.reveal-rise.in-view  { animation: lumiere-rise  1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+.reveal-left.in-view  { animation: lumiere-left  1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+.reveal-right.in-view { animation: lumiere-right 1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+.reveal-zoom.in-view  { animation: lumiere-zoom  1.1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+
+@keyframes lumiere-rise  { from { opacity: 0; translate: 0 48px; }  to { opacity: 1; translate: 0 0; } }
+@keyframes lumiere-left  { from { opacity: 0; translate: -70px 0; } to { opacity: 1; translate: 0 0; } }
+@keyframes lumiere-right { from { opacity: 0; translate: 70px 0; }  to { opacity: 1; translate: 0 0; } }
+@keyframes lumiere-zoom  { from { opacity: 0; scale: 0.92; translate: 0 32px; } to { opacity: 1; scale: 1; translate: 0 0; } }
 `;
 
   // ---------- Tumatakbo agad (para walang flash) ----------
@@ -596,6 +613,43 @@ blockquote, form, input, textarea, body > footer {
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onScroll);
       update();
+    }
+
+    // Scroll reveal: objects "spawn" as they come into view
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      const groups = [
+        ["#hero h1, #hero p, #hero .hero-actions", "reveal-rise"],
+        ["#hero > img", "reveal-zoom"],
+        ["#features > h2, #features > p, #gallery > h2, #testimonials > h2, #contact > h2, #contact > p", "reveal-rise"],
+        [".feature-list article", "reveal-rise"],
+        [".gallery-grid figure", "reveal-zoom"],
+        [".testimonial-list blockquote", "reveal-rise"],
+        [".about-text", "reveal-left"],
+        ["#about > img", "reveal-right"],
+        ["#contact form", "reveal-rise"],
+        ["body > footer", "reveal-rise"],
+      ];
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
+
+      groups.forEach(([selector, type]) => {
+        const counts = new Map();   // stagger siblings one after another
+        document.querySelectorAll(selector).forEach((el) => {
+          if (el.classList.contains("reveal")) return;
+          const i = counts.get(el.parentElement) || 0;
+          counts.set(el.parentElement, i + 1);
+          el.style.setProperty("--d", `${i * 0.15}s`);
+          el.classList.add("reveal", type);
+          observer.observe(el);
+        });
+      });
     }
 
     // Gumawa ng toggle button kung wala pa sa HTML
