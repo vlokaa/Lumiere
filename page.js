@@ -5,6 +5,11 @@
 (function () {
   "use strict";
 
+  // Address of your own contact server (the /server folder).
+  // Running it on your computer: http://localhost:3000/api/contact
+  // After you host it online, change this to its public address, e.g. https://your-app.onrender.com/api/contact
+  const CONTACT_API_URL = "http://localhost:3000/api/contact";
+
   const STORAGE_KEY = "lumiere-theme";
   const root = document.documentElement;
   const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -573,6 +578,11 @@ blockquote, form, input, textarea, body > footer {
 .reveal.reveal.in-view {
   transition-delay: var(--d, 0s), var(--d, 0s), var(--d, 0s), 0s, 0s, 0s, 0s, 0s;
 }
+
+/* ===== Contact form status + sending state ===== */
+#form-status.is-error { color: #d64545; }
+:root[data-theme="dark"] #form-status.is-error { color: #ff8a80; }
+button[type="submit"]:disabled { opacity: 0.7; cursor: wait; transform: none; }
 `;
 
   // ---------- Tumatakbo agad (para walang flash) ----------
@@ -692,7 +702,7 @@ blockquote, form, input, textarea, body > footer {
       if (!getSaved()) applyTheme(e.matches ? "dark" : "light");
     });
 
-    // Contact form: confirmation message imbes na mag-reload
+    // Contact form: sends the message to your own server and shows the result
     const form = document.querySelector("#contact form");
     if (form) {
       let status = document.getElementById("form-status");
@@ -702,11 +712,58 @@ blockquote, form, input, textarea, body > footer {
         status.setAttribute("role", "status");
         form.appendChild(status);
       }
-      form.addEventListener("submit", (e) => {
+
+      // hidden spam trap: real people never fill this in
+      const trap = document.createElement("input");
+      trap.type = "checkbox";
+      trap.name = "botcheck";
+      trap.tabIndex = -1;
+      trap.setAttribute("aria-hidden", "true");
+      trap.style.display = "none";
+      form.appendChild(trap);
+
+      const button = form.querySelector('button[type="submit"]');
+      const buttonText = button ? button.textContent : "";
+
+      const show = (text, isError) => {
+        status.textContent = text;
+        status.classList.toggle("is-error", Boolean(isError));
+      };
+
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const name = form.elements["name"] ? form.elements["name"].value.trim() : "";
-        status.textContent = `Thanks${name ? ", " + name : ""}! We'll get back to you soon.`;
-        form.reset();
+
+
+        const get = (n) => (form.elements[n] ? form.elements[n].value.trim() : "");
+        const name = get("name");
+
+        show("Sending your message…", false);
+        if (button) { button.disabled = true; button.textContent = "Sending…"; }
+
+        try {
+          const res = await fetch(CONTACT_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name,
+              email: get("email"),
+              message: get("message"),
+              botcheck: trap.checked,
+            }),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            show(`Thanks${name ? ", " + name : ""}! Your message was sent. We'll get back to you soon.`, false);
+            form.reset();
+          } else {
+            show(data.message || "Something went wrong. Please try again.", true);
+          }
+        } catch (err) {
+          show("Couldn't send your message. Check your connection and try again.", true);
+        } finally {
+          if (button) { button.disabled = false; button.textContent = buttonText; }
+        }
       });
     }
   }
